@@ -23,6 +23,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseRouting();
+
 app.UseAuthorization();
 
 app.MapControllers();
@@ -36,4 +38,4 @@ app.UseEndpoints(endpoints =>
 });
 
 await app.UseOcelot();
-app.Run();
+await app.RunAsync();
