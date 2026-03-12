@@ -56,8 +56,20 @@ public static class TestUsers
                         new Claim(JwtClaimTypes.WebSite, "http://bob.com"),
                         new Claim(JwtClaimTypes.Address, JsonSerializer.Serialize(address), IdentityServerConstants.ClaimValueTypes.Json)
                     }
+                },
+                new TestUser
+                {
+                    SubjectId= "3",
+                    Username = "IbrahimElarby",
+                    Password = "123",
+                    Claims =
+                    {
+                        new Claim(JwtClaimTypes.Name, "Ibrahim Elarby"),
+                        new Claim(JwtClaimTypes.GivenName, "Ibrahim"),
+                        new Claim(JwtClaimTypes.FamilyName, "Elarby"),
+                        new Claim(JwtClaimTypes.Email, "Ibrahim.Elarby.Scurt@gmail.com")
                 }
-            };
+            } };
         }
     }
 }

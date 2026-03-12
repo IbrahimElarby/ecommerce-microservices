@@ -5,6 +5,7 @@ using catalog.Core.Repositories;
 using catalog.Infrastructure.Data.Contexts;
 using catalog.Infrastructure.Repositories;
 using Common.Logging;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Serilog;
 using System.Reflection;
 
@@ -20,12 +21,63 @@ namespace catalog.API
             builder.Host.UseSerilog(Logging.ConfigureLogging);
             builder.Services.AddControllers();
 
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options=>
+                {
+                    options.Authority = "https://host.docker.internal:9009";
+                    options.RequireHttpsMetadata = true;
+                    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = "https://localhost:9009",
+                        ValidateAudience = true,
+                        ValidAudience = "Catalog",
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ClockSkew = TimeSpan.Zero
+                    };
+                    // add this to bypass SSL certificate validation for development purposes only, not recommended for production environments
+                    options.BackchannelHttpHandler = new HttpClientHandler
+                    {
+                        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+                    };
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = context =>
+                        {
+                            Log.Error("Authentication failed: {ErrorMessage}", context.Exception.Message);
+                            return Task.CompletedTask;
+                        },
+                        OnTokenValidated = context =>
+                        {
+                            Log.Information("Token validated successfully for user: {UserName}", context.Principal.Identity.Name);
+                            return Task.CompletedTask;
+                        },
+                        OnChallenge = context =>
+                        {
+                            Log.Warning("Authentication challenge: {ErrorDescription}", context.ErrorDescription);
+                            return Task.CompletedTask;
+                        }
+                    };
+                }
+                );
+
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly(),Assembly.GetAssembly(typeof(GetAllProductsByIdQuery))));
             builder.Services.AddAutoMapper(typeof(ProductMappingProfile).Assembly);
             builder.Services.AddScoped<ICatalogContext, CatalogContext>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IProductBrandRepository, ProductRepository>();
             builder.Services.AddScoped<IProductTypeRepository, ProductRepository>();
+
+            var userPolicy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+
+            builder.Services.AddControllers(options =>
+            {
+                options.Filters.Add(new Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter(userPolicy));
+            });
 
             builder.Services.AddApiVersioning(options=>
             {
@@ -59,6 +111,7 @@ namespace catalog.API
                 app.UseSwaggerUI();
             }
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

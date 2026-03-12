@@ -8,6 +8,8 @@ services:
       - "8000:8000"
     depends_on:
       - CatalogDb
+    extra_hosts:
+      - "host.docker.internal:host-gateway"    
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ENV ASPNETCORE_URLS=http://+:8000
@@ -17,6 +19,9 @@ services:
       - DatabaseSettings__BrandsCollection=Brands
       - DatabaseSettings__TypesCollection=Types
       - "ElasticConfiguration__Uri=http://elasticsearch:9200" 
+      - Auth_Authority="http://host.docker.internal:9009"
+      - Auth__RequireHttpsMetadata=false
+      - Auth__Audience=Catalog 
 
   CatalogDb:
     image: mongo:4.4.2-bionic
@@ -173,7 +178,7 @@ services:
       dockerfile: APIGateWay/Ocelot.APIGateway/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8000
+      - ASPNETCORE_URLS=http://+:8080
     depends_on:
       - catalog.api
       - basket.api

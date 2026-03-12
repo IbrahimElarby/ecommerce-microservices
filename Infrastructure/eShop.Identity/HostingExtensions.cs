@@ -17,15 +17,16 @@ internal static class HostingExtensions
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
-
+                options.IssuerUri = "https://localhost:9009"; // set the issuer URI to match the authority in the API's JWT bearer configuration
                 // see https://docs.duendesoftware.com/identityserver/v6/fundamentals/resources/
                 options.EmitStaticAudienceClaim = true;
             })
-            .AddTestUsers(TestUsers.Users);
+            .AddTestUsers(TestUsers.Users).AddDeveloperSigningCredential(persistKey:true,filename:"tempkey.jwk");
 
         // in-memory, code config
         isBuilder.AddInMemoryIdentityResources(Config.IdentityResources);
         isBuilder.AddInMemoryApiScopes(Config.ApiScopes);
+        isBuilder.AddInMemoryApiResources(Config.ApiResources);
         isBuilder.AddInMemoryClients(Config.Clients);
 
 
