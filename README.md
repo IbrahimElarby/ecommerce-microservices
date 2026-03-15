@@ -46,6 +46,7 @@ Catalog API | 8000
 Basket API | 8001
 Discount API | 8002
 Ordering API | 8003
+Ocelot Gateway | 8010
 RabbitMQ | 15672
 Kibana | 5601
 
