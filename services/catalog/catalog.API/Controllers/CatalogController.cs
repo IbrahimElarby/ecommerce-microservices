@@ -3,6 +3,7 @@ using catalog.Application.Queries;
 using catalog.Application.Responses;
 using catalog.Core.Specs;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -25,6 +26,7 @@ namespace catalog.API.Controllers
         [Route("[action]/{Id}", Name = "GetProductById")]
         [ProducesResponseType(typeof(ProductResponeDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [Authorize(Policy = "ReadAccess")]
 
         public async Task<ActionResult<ProductResponeDto>> GetProductById(string Id)
         {
@@ -37,7 +39,7 @@ namespace catalog.API.Controllers
         [Route("[action]/{Name}", Name = "GetProductByName")]
         [ProducesResponseType(typeof(ProductResponeDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-
+        [Authorize(Policy = "ReadAccess")]
         public async Task<ActionResult<ProductResponeDto>> GetProductByName(string Name)
         {
             var query = new GetProductByNameQuery(Name);
@@ -48,7 +50,7 @@ namespace catalog.API.Controllers
         [Route("[action]/{Name}", Name = "GetAllProductsByName")]
         [ProducesResponseType(typeof(List<ProductResponeDto>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-
+        [Authorize(Policy = "ReadAccess")]
         public async Task<ActionResult<ProductResponeDto>> GetAllProductsByName(string Name)
         {
             var query = new GetAllProductsByNameQuery(Name);
@@ -60,7 +62,7 @@ namespace catalog.API.Controllers
         [HttpGet]
         [Route("GetAllProducts")]
         [ProducesResponseType(typeof(List<ProductResponeDto>), (int)HttpStatusCode.OK)]
-
+        [Authorize(Policy = "ReadAccess")]
 
         public async Task<ActionResult<List<ProductResponeDto>>> GetAllProducts([FromQuery]CatalogSpecsParams specsParams)
         {
@@ -72,6 +74,7 @@ namespace catalog.API.Controllers
         [HttpGet]
         [Route("GetAllBrands")]
         [ProducesResponseType(typeof(List<BrandResponseDto>), (int)HttpStatusCode.OK)]
+        [Authorize(Policy = "ReadAccess")]
         public async Task<ActionResult<List<BrandResponseDto>>> GetAllBrands()
         {
             var query = new GetAllBrandsQuery();
@@ -82,6 +85,7 @@ namespace catalog.API.Controllers
         [HttpGet]
         [Route("GetAllTypes")]
         [ProducesResponseType(typeof(List<TypesResponseDto>), (int)HttpStatusCode.OK)]
+        [Authorize(Policy = "ReadAccess")]
         public async Task<ActionResult<List<TypesResponseDto>>> GetAllTypes()
         {
             var query = new GetAllTypesQuery();
@@ -92,7 +96,7 @@ namespace catalog.API.Controllers
         [HttpPost]
         [Route("CreateProduct")]
         [ProducesResponseType(typeof(ProductResponeDto), (int)HttpStatusCode.OK)]
-
+        [Authorize(Policy = "WriteAccess")]
         public async Task<ActionResult<ProductResponeDto>> CreateProduct([FromBody] CreateProductCommand command)
         {
             var result = await _mediator.Send(command);
@@ -102,6 +106,7 @@ namespace catalog.API.Controllers
         [HttpPut]
         [Route("UpdateProduct")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+        [Authorize(Policy = "WriteAccess")]
 
         public async Task<ActionResult<bool>> UpdateProduct([FromBody] UpdateProductCommand command)
         {
@@ -113,6 +118,7 @@ namespace catalog.API.Controllers
         [HttpPut]
         [Route("{Id}", Name = "DeleteProduct")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+        [Authorize(Policy = "WriteAccess")]
 
         public async Task<ActionResult<bool>> DeleteProduct(string Id)
         {

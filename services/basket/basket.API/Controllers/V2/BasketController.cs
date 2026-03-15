@@ -28,7 +28,7 @@ namespace basket.API.Controllers.V2
             _publishEndpoint = publishEndpoint;
             _logger = logger;
         }
-        [Route("[action]/Checkout")]
+        [Route("[action]")]
         [HttpPost]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]

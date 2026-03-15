@@ -63,6 +63,11 @@ namespace catalog.API
                 }
                 );
 
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ReadAccess", policy => policy.RequireClaim("scope", "catalogapi.read"));
+                options.AddPolicy("WriteAccess", policy => policy.RequireClaim("scope", "catalogapi.write"));
+            });
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly(),Assembly.GetAssembly(typeof(GetAllProductsByIdQuery))));
             builder.Services.AddAutoMapper(typeof(ProductMappingProfile).Assembly);
             builder.Services.AddScoped<ICatalogContext, CatalogContext>();

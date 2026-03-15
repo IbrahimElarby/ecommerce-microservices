@@ -114,6 +114,9 @@
     {
       "DownstreamPathTemplate": "/api/v1/Basket/Checkout",
       "DownstreamScheme": "http",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "EshoppingGatewayAuthSchema"
+      },
       "DownstreamHostAndPorts": [
         {
           "Host": "host.docker.internal",
@@ -124,10 +127,7 @@
       "UpstreamHttpMethod": [ "POST" ],
       "RateLimitOptions": {
         "ClientWhitelist": [],
-        "EnableRateLimiting": true,
-        "Period": "3s",
-        "PeriodTimespan": 1,
-        "Limit": 1
+        "EnableRateLimiting": false
       }
     },
     {
@@ -143,10 +143,7 @@
       "UpstreamHttpMethod": [ "POST" ],
       "RateLimitOptions": {
         "ClientWhitelist": [],
-        "EnableRateLimiting": true,
-        "Period": "3s",
-        "PeriodTimespan": 1,
-        "Limit": 1
+        "EnableRateLimiting": false
       }
     },
     //Discount API
@@ -176,7 +173,7 @@
     },
     //Order API
     {
-      "DownstreamPathTemplate": "/api/v1/Order/{userName}",
+      "DownstreamPathTemplate": "/api/v1/Ordering/{userName}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
